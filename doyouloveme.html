@@ -1,0 +1,237 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Do You Love Me?</title>
+  <style>
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: linear-gradient(135deg, #14142b, #23234a);
+      font-family: Arial, Helvetica, sans-serif;
+      overflow: hidden;
+    }
+
+    .card {
+      width: min(92vw, 420px);
+      background: #fff7fb;
+      border-radius: 24px;
+      padding: 28px 22px;
+      text-align: center;
+      box-shadow: 0 20px 50px rgba(0, 0, 0, 0.35);
+      position: relative;
+    }
+
+    h1 {
+      margin: 0 0 14px;
+      font-size: 2rem;
+      color: #ff4f87;
+    }
+
+    p {
+      margin: 0 0 18px;
+      color: #444;
+      font-size: 1.05rem;
+    }
+
+    .gif-box {
+      width: 180px;
+      height: 180px;
+      margin: 0 auto 18px;
+      border-radius: 18px;
+      background: #ffe3ec;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 70px;
+      user-select: none;
+    }
+
+    .buttons {
+      position: relative;
+      height: 150px;
+      margin-top: 12px;
+    }
+
+    button {
+      border: none;
+      border-radius: 999px;
+      padding: 14px 24px;
+      font-size: 1rem;
+      font-weight: 700;
+      cursor: pointer;
+      transition: transform 0.2s ease, box-shadow 0.2s ease;
+      box-shadow: 0 10px 18px rgba(0, 0, 0, 0.12);
+    }
+
+    button:hover { transform: scale(1.05); }
+
+    .yes-btn {
+      background: #ff4f87;
+      color: white;
+      position: absolute;
+      left: 22%;
+      top: 72px;
+    }
+
+    .no-btn {
+      background: #ffffff;
+      color: #333;
+      border: 2px solid #ffd0df;
+      position: absolute;
+      left: 58%;
+      top: 72px;
+    }
+
+    .result {
+      display: none;
+      animation: pop 0.45s ease;
+    }
+
+    .result .gif-box {
+      background: #fff0f5;
+    }
+
+    .result h2 {
+      margin: 0;
+      color: #ff4f87;
+      font-size: 2rem;
+    }
+
+    .hearts {
+      position: fixed;
+      inset: 0;
+      pointer-events: none;
+      overflow: hidden;
+    }
+
+    .heart {
+      position: absolute;
+      bottom: -20px;
+      font-size: 24px;
+      animation: floatUp linear forwards;
+      opacity: 0.9;
+    }
+
+    @keyframes floatUp {
+      to {
+        transform: translateY(-110vh) rotate(360deg);
+        opacity: 0;
+      }
+    }
+
+    @keyframes pop {
+      0% { transform: scale(0.8); opacity: 0; }
+      100% { transform: scale(1); opacity: 1; }
+    }
+  </style>
+</head>
+<body>
+  <div class="card">
+    <div class="question" id="questionScreen">
+      <h1>Do You Love Me? 💖</h1>
+      <p>Trả lời thật lòng nha 😳</p>
+      <div class="gif-box" id="questionGif">🐻🤍</div>
+
+      <div class="buttons" id="buttonsArea">
+        <button class="yes-btn" id="yesBtn">Yes</button>
+        <button class="no-btn" id="noBtn">No</button>
+      </div>
+    </div>
+
+    <div class="result" id="resultScreen">
+      <div class="gif-box">🥰🐻</div>
+      <h2>I knew it 😍!</h2>
+    </div>
+  </div>
+
+  <div class="hearts" id="hearts"></div>
+
+  <script>
+    const yesBtn = document.getElementById('yesBtn');
+    const noBtn = document.getElementById('noBtn');
+    const buttonsArea = document.getElementById('buttonsArea');
+    const questionScreen = document.getElementById('questionScreen');
+    const resultScreen = document.getElementById('resultScreen');
+    const questionGif = document.getElementById('questionGif');
+    const hearts = document.getElementById('hearts');
+
+    const noMessages = [
+      'No',
+      'Chắc chưa?',
+      'Suy nghĩ lại đi 😭',
+      'Đừng bấm mà 🥺',
+      'Bấm Yes đi mà 💕'
+    ];
+
+    let noCount = 0;
+    let lastMove = 0;
+
+    function getAreaSize() {
+      return {
+        width: buttonsArea.clientWidth,
+        height: buttonsArea.clientHeight
+      };
+    }
+
+    function moveNoButton() {
+      const now = Date.now();
+      if (now - lastMove < 120) return;
+      lastMove = now;
+
+      const area = getAreaSize();
+      const btnWidth = noBtn.offsetWidth;
+      const btnHeight = noBtn.offsetHeight;
+
+      const maxX = Math.max(0, area.width - btnWidth);
+      const maxY = Math.max(0, area.height - btnHeight);
+
+      const randomX = Math.floor(Math.random() * (maxX + 1));
+      const randomY = Math.floor(Math.random() * (maxY + 1));
+
+      noBtn.style.left = randomX + 'px';
+      noBtn.style.top = randomY + 'px';
+
+      noCount++;
+      noBtn.textContent = noMessages[Math.min(noCount, noMessages.length - 1)];
+      yesBtn.style.transform = `scale(${1 + noCount * 0.08})`;
+      questionGif.textContent = noCount > 2 ? '🥺🐻' : '🐻🤍';
+    }
+
+    function handleNoTouch(e) {
+      e.preventDefault();
+      moveNoButton();
+    }
+
+    function showResult() {
+      questionScreen.style.display = 'none';
+      resultScreen.style.display = 'block';
+      launchHearts();
+    }
+
+    function launchHearts() {
+      for (let i = 0; i < 28; i++) {
+        const heart = document.createElement('div');
+        heart.className = 'heart';
+        heart.textContent = Math.random() > 0.5 ? '💖' : '💕';
+        heart.style.left = Math.random() * 100 + 'vw';
+        heart.style.animationDuration = 3 + Math.random() * 3 + 's';
+        heart.style.fontSize = 18 + Math.random() * 24 + 'px';
+        hearts.appendChild(heart);
+        setTimeout(() => heart.remove(), 6000);
+      }
+    }
+
+    noBtn.addEventListener('mouseenter', moveNoButton);
+    noBtn.addEventListener('click', handleNoTouch);
+    noBtn.addEventListener('touchstart', handleNoTouch, { passive: false });
+    yesBtn.addEventListener('click', showResult);
+    yesBtn.addEventListener('touchstart', showResult, { passive: true });
+  </script>
+</body>
+</html>
