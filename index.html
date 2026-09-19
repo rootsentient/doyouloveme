@@ -1,108 +1,253 @@
 <!DOCTYPE html>
 <html lang="vi">
 <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Bảo Ngân có yêu Mạnh Đức không?</title>
+    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
     <style>
-        * { box-sizing: border-box; }
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
 
         :root {
             --bg1: #ffd9e8;
             --bg2: #fff0f6;
-            --card: rgba(255, 255, 255, 0.88);
+            --card: rgba(255, 255, 255, 0.92);
             --primary: #ff4f87;
             --primary-dark: #e63d75;
-            --text: #333;
-            --muted: #666;
+            --text: #2c3e50;
+            --muted: #7f8c8d;
             --border: #ffd0df;
-            --success: #1f9d55;
-            --shadow: 0 20px 50px rgba(255, 79, 135, 0.18);
+            --shadow: 0 20px 50px rgba(255, 79, 135, 0.2);
         }
 
         body {
-            margin: 0;
             min-height: 100vh;
             display: flex;
             align-items: center;
             justify-content: center;
             background: linear-gradient(135deg, var(--bg1), var(--bg2));
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
             overflow-x: hidden;
+            position: relative;
+            padding: 20px;
+        }
+
+        /* Hiệu ứng trái tim bay ở nền */
+        .heart-bg {
+            position: absolute;
+            color: rgba(255, 79, 135, 0.25);
+            animation: floatUp 6s infinite linear;
+            pointer-events: none;
+            z-index: 1;
+        }
+
+        @keyframes floatUp {
+            0% { transform: translateY(100vh) scale(0.5); opacity: 1; }
+            100% { transform: translateY(-10vh) scale(1.2); opacity: 0; }
         }
 
         .container {
-            width: 90%;
-            max-width: 450px;
+            width: 100%;
+            max-width: 460px;
             background: var(--card);
-            padding: 30px;
-            border-radius: 20px;
+            padding: 35px 25px;
+            border-radius: 24px;
             box-shadow: var(--shadow);
             text-align: center;
             backdrop-filter: blur(10px);
-            border: 1px solid var(--border);
+            border: 2px solid var(--border);
+            position: relative;
+            z-index: 10;
+        }
+
+        .avatar-box {
+            font-size: 4rem;
+            margin-bottom: 10px;
+            animation: pulse 1.5s infinite alternate;
+        }
+
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            100% { transform: scale(1.1); }
         }
 
         h1 {
             color: var(--primary);
-            font-size: 1.8rem;
-            margin-bottom: 20px;
+            font-size: 1.7rem;
+            margin-bottom: 15px;
+            line-height: 1.4;
+        }
+
+        .hint-text {
+            color: var(--muted);
+            font-size: 0.95rem;
+            margin-bottom: 25px;
+            min-height: 24px;
         }
 
         .btn-group {
             display: flex;
             justify-content: center;
+            align-items: center;
             gap: 15px;
-            margin-top: 25px;
+            margin-top: 10px;
             position: relative;
-            min-height: 50px;
+            min-height: 60px;
         }
 
         button {
-            padding: 12px 25px;
-            font-size: 1rem;
-            font-weight: bold;
+            padding: 12px 28px;
+            font-size: 1.05rem;
+            font-weight: 700;
             border: none;
-            border-radius: 25px;
+            border-radius: 30px;
             cursor: pointer;
-            transition: all 0.2s ease;
+            transition: transform 0.2s ease, background-color 0.2s ease;
         }
 
         .btn-yes {
             background-color: var(--primary);
             color: white;
             box-shadow: 0 4px 15px rgba(255, 79, 135, 0.4);
+            z-index: 2;
         }
 
         .btn-yes:hover {
             background-color: var(--primary-dark);
-            transform: scale(1.05);
+            transform: scale(1.08);
         }
 
         .btn-no {
-            background-color: #f0f0f0;
-            color: var(--muted);
+            background-color: #e9ecef;
+            color: #6c757d;
+            position: relative;
+            transition: all 0.15s ease-out;
+        }
+
+        /* Bức thư tình khi bấm Có */
+        .letter-card {
+            display: none;
+            margin-top: 20px;
+            text-align: left;
+            background: #fff;
+            padding: 20px;
+            border-radius: 16px;
+            border: 1px dashed var(--primary);
+            color: var(--text);
+            line-height: 1.6;
+            font-size: 0.98rem;
+        }
+
+        .letter-card h3 {
+            color: var(--primary);
+            text-align: center;
+            margin-bottom: 10px;
         }
     </style>
 </head>
 <body>
-    <div class="container">
-        <h1>Bảo Ngân có yêu Mạnh Đức không? ❤️</h1>
+
+    <!-- Tạo bóng trái tim bay -->
+    <script>
+        for (let i = 0; i < 15; i++) {
+            const heart = document.createElement('div');
+            heart.className = 'heart-bg';
+            heart.innerHTML = '❤️';
+            heart.style.left = Math.random() * 100 + 'vw';
+            heart.style.animationDuration = (Math.random() * 3 + 4) + 's';
+            heart.style.animationDelay = Math.random() * 5 + 's';
+            heart.style.fontSize = (Math.random() * 20 + 15) + 'px';
+            document.body.appendChild(heart);
+        }
+    </script>
+
+    <div class="container" id="mainCard">
+        <div class="avatar-box">💖</div>
+        <h1>Bảo Ngân có yêu Mạnh Đức không?</h1>
+        <p class="hint-text" id="hintText">Trả lời thành thật nha người đẹp! 🥺</p>
+
         <div class="btn-group">
-            <button class="btn-yes" onclick="alert('Mạnh Đức cũng yêu Bảo Ngân rất nhiều! 🥰')">Có chứ! ❤️</button>
+            <button class="btn-yes" id="btnYes" onclick="acceptLove()">Có chứ! ❤️</button>
             <button class="btn-no" id="btnNo">Không 😜</button>
+        </div>
+
+        <div class="letter-card" id="letterCard">
+            <h3>Gửi Bảo Ngân đáng yêu 🥰</h3>
+            <p id="typewriterText"></p>
         </div>
     </div>
 
     <script>
         const btnNo = document.getElementById('btnNo');
-        btnNo.addEventListener('mouseover', () => {
-            const x = Math.floor(Math.random() * (window.innerWidth - btnNo.offsetWidth));
-            const y = Math.floor(Math.random() * (window.innerHeight - btnNo.offsetHeight));
+        const btnYes = document.getElementById('btnYes');
+        const hintText = document.getElementById('hintText');
+        const letterCard = document.getElementById('letterCard');
+
+        let yesScale = 1;
+        const hints = [
+            "Ơ kìa, bấm nhầm nút đúng không? 🥺",
+            "Đừng bấm Không mà, bấm Có đi! 💖",
+            "Nút Không bị lỗi rồi, chọn Có đi nha! 🙈",
+            "Mạnh Đức thương Bảo Ngân lắm đó! 🌸",
+            "Không thoát được đâu hứa luôn! 😜"
+        ];
+        let hintIndex = 0;
+
+        // Xử lý nút "Không" chạy trốn
+        function moveNoButton() {
+            const x = Math.floor(Math.random() * (window.innerWidth - btnNo.offsetWidth - 40)) + 20;
+            const y = Math.floor(Math.random() * (window.innerHeight - btnNo.offsetHeight - 40)) + 20;
+
             btnNo.style.position = 'fixed';
             btnNo.style.left = `${x}px`;
             btnNo.style.top = `${y}px`;
+
+            // Tăng kích thước nút "Có"
+            yesScale += 0.15;
+            btnYes.style.transform = `scale(${yesScale})`;
+
+            // Đổi câu nhắc
+            hintText.innerText = hints[hintIndex % hints.length];
+            hintIndex++;
+        }
+
+        btnNo.addEventListener('mouseover', moveNoButton);
+        btnNo.addEventListener('touchstart', (e) => {
+            e.preventDefault();
+            moveNoButton();
         });
+
+        // Xử lý khi bấm "Có"
+        function acceptLove() {
+            // Pháo hoa trái tim
+            confetti({
+                particleCount: 100,
+                spread: 70,
+                origin: { y: 0.6 }
+            });
+
+            document.querySelector('h1').innerText = "Mạnh Đức biết mà! 🥰❤️";
+            hintText.innerText = "Yêu Bảo Ngân nhiều lắm lắm luôn! 💖";
+            document.querySelector('.btn-group').style.display = 'none';
+
+            // Hiện thư tình
+            letterCard.style.display = 'block';
+            const message = "Cảm ơn Bảo Ngân vì đã đến và làm cho cuộc sống của Mạnh Đức trở nên rực rỡ hơn. Mong rằng mỗi ngày trôi qua chúng ta đều ngọt ngào và hạnh phúc như thế này nhé! 🌸✨";
+            
+            let i = 0;
+            function typeWriter() {
+                if (i < message.length) {
+                    document.getElementById("typewriterText").innerHTML += message.charAt(i);
+                    i++;
+                    setTimeout(typeWriter, 40);
+                }
+            }
+            typeWriter();
+        }
     </script>
 </body>
 </html>
